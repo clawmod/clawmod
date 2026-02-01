@@ -2,8 +2,15 @@
   "name": "@clawmod/clawmod",
   "version": "0.1.0",
   "description": "The complete OpenClaw enhancement platform",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "main": "dist/index.mjs",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.mts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.mjs",
+      "types": "./dist/index.d.mts"
+    }
+  },
   "files": ["dist"],
   "openclaw": {
     "extensions": ["dist/index.js"],
