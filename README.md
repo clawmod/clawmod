@@ -8,17 +8,16 @@
   <strong>The Security & Memory Enhancement Suite for OpenClaw</strong>
 </p>
 
-<!-- Replace YOUR_USERNAME with your GitHub username or org -->
 <p align="center">
   <a href="https://www.npmjs.com/package/@clawmod/clawmod"><img src="https://img.shields.io/npm/v/@clawmod/clawmod?style=for-the-badge&logo=npm&logoColor=white" alt="npm version" /></a>
-  <a href="https://github.com/YOUR_USERNAME/clawmod/actions"><img src="https://img.shields.io/github/actions/workflow/status/YOUR_USERNAME/clawmod/ci.yml?style=for-the-badge&logo=github&logoColor=white" alt="Build Status" /></a>
-  <a href="https://codecov.io/gh/YOUR_USERNAME/clawmod"><img src="https://img.shields.io/codecov/c/github/YOUR_USERNAME/clawmod?style=for-the-badge&logo=codecov&logoColor=white" alt="Coverage" /></a>
-  <a href="https://github.com/YOUR_USERNAME/clawmod/blob/main/LICENSE"><img src="https://img.shields.io/github/license/YOUR_USERNAME/clawmod?style=for-the-badge" alt="License" /></a>
+  <a href="https://github.com/clawmod/clawmod/actions"><img src="https://img.shields.io/github/actions/workflow/status/clawmod/clawmod/ci.yml?style=for-the-badge&logo=github&logoColor=white" alt="Build Status" /></a>
+  <a href="https://codecov.io/gh/clawmod/clawmod"><img src="https://img.shields.io/codecov/c/github/clawmod/clawmod?style=for-the-badge&logo=codecov&logoColor=white" alt="Coverage" /></a>
+  <a href="https://github.com/clawmod/clawmod/blob/main/LICENSE"><img src="https://img.shields.io/github/license/clawmod/clawmod?style=for-the-badge" alt="License" /></a>
 </p>
 
 <p align="center">
-  <a href="https://snyk.io/test/github/YOUR_USERNAME/clawmod"><img src="https://img.shields.io/snyk/vulnerabilities/github/YOUR_USERNAME/clawmod?style=for-the-badge&logo=snyk&logoColor=white" alt="Snyk Security" /></a>
-  <a href="https://securityscorecards.dev/viewer/?uri=github.com/YOUR_USERNAME/clawmod"><img src="https://img.shields.io/ossf-scorecard/github.com/YOUR_USERNAME/clawmod?style=for-the-badge&label=openssf" alt="OpenSSF Scorecard" /></a>
+  <a href="https://snyk.io/test/github/clawmod/clawmod"><img src="https://img.shields.io/snyk/vulnerabilities/github/clawmod/clawmod?style=for-the-badge&logo=snyk&logoColor=white" alt="Snyk Security" /></a>
+  <a href="https://securityscorecards.dev/viewer/?uri=github.com/clawmod/clawmod"><img src="https://img.shields.io/ossf-scorecard/github.com/clawmod/clawmod?style=for-the-badge&label=openssf" alt="OpenSSF Scorecard" /></a>
 </p>
 
 <p align="center">
