@@ -17,7 +17,7 @@
 
 <p align="center">
   <a href="https://snyk.io/test/github/clawmod/clawmod"><img src="https://snyk.io/test/github/clawmod/clawmod/badge.svg" alt="Snyk Security" /></a>
-  <a href="https://securityscorecards.dev/viewer/?uri=github.com/clawmod/clawmod"><img src="https://img.shields.io/ossf-scorecard/github.com/clawmod/clawmod?style=for-the-badge&label=openssf" alt="OpenSSF Scorecard" /></a>
+  <a href="https://scorecard.dev/viewer/?uri=github.com/clawmod/clawmod"><img src="https://api.scorecard.dev/projects/github.com/clawmod/clawmod/badge" alt="OpenSSF Scorecard" /></a>
 </p>
 
 <p align="center">
