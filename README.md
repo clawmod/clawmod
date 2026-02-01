@@ -15,10 +15,7 @@
   <a href="https://github.com/clawmod/clawmod/blob/main/LICENSE"><img src="https://img.shields.io/github/license/clawmod/clawmod?style=for-the-badge" alt="License" /></a>
 </p>
 
-<p align="center">
-  <a href="https://snyk.io/test/github/clawmod/clawmod"><img src="https://img.shields.io/snyk/vulnerabilities/github/clawmod/clawmod?style=for-the-badge&logo=snyk&logoColor=white" alt="Snyk Security" /></a>
-  <a href="https://securityscorecards.dev/viewer/?uri=github.com/clawmod/clawmod"><img src="https://img.shields.io/ossf-scorecard/github.com/clawmod/clawmod?style=for-the-badge&label=openssf" alt="OpenSSF Scorecard" /></a>
-</p>
+<!-- Security badges will appear after Snyk/OpenSSF index the repo (24-48 hours) -->
 
 <p align="center">
   <a href="#-features">Features</a> •
