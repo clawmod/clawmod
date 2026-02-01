@@ -1,6 +1,6 @@
 {
   "name": "@clawmod/clawmod",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "type": "module",
   "description": "The complete OpenClaw enhancement platform",
   "main": "dist/index.mjs",
@@ -12,9 +12,13 @@
       "types": "./dist/index.d.mts"
     }
   },
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "openclaw": {
-    "extensions": ["dist/index.js"],
+    "extensions": [
+      "dist/index.js"
+    ],
     "minVersion": "1.0.0",
     "hooks": {
       "before_agent_start": "dist/hooks/before-agent-start.js",
@@ -32,7 +36,9 @@
       "dist/skills/clawmem-recall.js",
       "dist/skills/clawshield-scan.js"
     ],
-    "slots": ["memory"]
+    "slots": [
+      "memory"
+    ]
   },
   "scripts": {
     "build": "tsup",
@@ -68,7 +74,13 @@
   "publishConfig": {
     "access": "public"
   },
-  "keywords": ["openclaw", "memory", "security", "ai", "agent"],
+  "keywords": [
+    "openclaw",
+    "memory",
+    "security",
+    "ai",
+    "agent"
+  ],
   "author": "",
   "license": "MIT"
 }
