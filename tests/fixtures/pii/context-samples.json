@@ -1,0 +1,13 @@
+{
+  "email_in_text": [
+    "Please contact me at john@example.com for more info",
+    "My email is test@domain.org and my phone is 555-123-4567"
+  ],
+  "phone_in_text": [
+    "Call me at (555) 123-4567 tomorrow",
+    "Phone: +1-800-555-0199"
+  ],
+  "multiple_pii": [
+    "User John Doe, email: john@test.com, SSN: 123-45-6789, CC: 4111111111111111"
+  ]
+}
