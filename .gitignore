@@ -1,2 +1,41 @@
-md-files
+# Documentation (internal)
+md-files/
+
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+
+# Test coverage
+coverage/
+
+# Environment variables (secrets)
+.env
+.env.local
+.env.*.local
+
+# OS files
 .DS_Store
+Thumbs.db
+
+# Editor/IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Logs
+*.log
+npm-debug.log*
+
+# Temporary files
+*.tmp
+*.temp
+.cache/
+
+# Claude Code specific (personal instructions)
+CLAUDE.md
+
+# Local development
+*.local

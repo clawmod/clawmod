@@ -1,0 +1,66 @@
+{
+  "name": "@clawmod/clawmod",
+  "version": "0.1.0",
+  "description": "The complete OpenClaw enhancement platform",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": ["dist"],
+  "openclaw": {
+    "extensions": ["dist/index.js"],
+    "minVersion": "1.0.0",
+    "hooks": {
+      "before_agent_start": "dist/hooks/before-agent-start.js",
+      "message_received": "dist/hooks/message-received.js",
+      "message_sending": "dist/hooks/message-sending.js",
+      "session_start": "dist/hooks/session-start.js",
+      "session_end": "dist/hooks/session-end.js",
+      "before_compaction": "dist/hooks/before-compaction.js"
+    },
+    "commands": {
+      "clawmod": "dist/cli/index.js"
+    },
+    "skills": [
+      "dist/skills/clawmem-remember.js",
+      "dist/skills/clawmem-recall.js",
+      "dist/skills/clawshield-scan.js"
+    ],
+    "slots": ["memory"]
+  },
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "test": "vitest",
+    "test:unit": "vitest run tests/unit",
+    "test:integration": "vitest run tests/integration",
+    "test:security": "vitest run tests/security",
+    "test:e2e": "vitest run tests/e2e",
+    "test:coverage": "vitest run --coverage",
+    "lint": "eslint src",
+    "typecheck": "tsc --noEmit",
+    "prepublishOnly": "npm run build && npm run test"
+  },
+  "dependencies": {
+    "better-sqlite3": "^12.6.2",
+    "zod": "^4.3.6"
+  },
+  "devDependencies": {
+    "@fast-check/vitest": "^0.2.4",
+    "@types/better-sqlite3": "^7.6.13",
+    "@types/node": "^25.1.0",
+    "@vitest/coverage-v8": "^4.0.18",
+    "eslint": "^9.39.2",
+    "msw": "^2.12.7",
+    "tsup": "^8.5.1",
+    "typescript": "^5.9.3",
+    "vitest": "^4.0.18"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "keywords": ["openclaw", "memory", "security", "ai", "agent"],
+  "author": "",
+  "license": "MIT"
+}
