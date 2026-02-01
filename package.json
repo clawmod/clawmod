@@ -1,6 +1,7 @@
 {
   "name": "@clawmod/clawmod",
   "version": "0.1.0",
+  "type": "module",
   "description": "The complete OpenClaw enhancement platform",
   "main": "dist/index.mjs",
   "module": "dist/index.mjs",
