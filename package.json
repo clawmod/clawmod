@@ -51,7 +51,7 @@
     "test:coverage": "vitest run --coverage",
     "lint": "eslint src",
     "typecheck": "tsc --noEmit",
-    "prepublishOnly": "npm run build && npm run test"
+    "prepublishOnly": "npm run build && vitest run"
   },
   "dependencies": {
     "better-sqlite3": "^12.6.2",
