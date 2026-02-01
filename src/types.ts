@@ -166,7 +166,7 @@ export interface StorageAdapter {
 export interface HookManager {
   on(event: HookEvent, handler: HookHandler, priority?: number): void;
   off(event: HookEvent, handler: HookHandler): void;
-  emit(event: HookEvent, data: unknown): Promise<HookResult[]>;
+  emit(event: HookEvent, data: unknown, metadata?: Record<string, unknown>): Promise<HookResult>;
 }
 
 export interface HealthChecker {
