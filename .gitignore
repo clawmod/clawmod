@@ -1,5 +1,7 @@
 # Documentation (internal)
 md-files/
+DEVELOPMENT.md
+HOOKS-MIGRATION.md
 
 # Dependencies
 node_modules/
@@ -32,7 +34,9 @@ npm-debug.log*
 # Temporary files
 *.tmp
 *.temp
+*.old
 .cache/
+scratchpad/
 
 # Claude Code specific (personal instructions)
 CLAUDE.md
@@ -40,3 +44,4 @@ CLAUDE.md
 # Local development
 *.local
 docs/
+DEVELOPMENT.md
