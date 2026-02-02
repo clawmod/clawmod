@@ -1,0 +1,142 @@
+{
+  "id": "clawmod",
+  "name": "ClawMod",
+  "description": "Security & Memory Enhancement Suite for OpenClaw",
+  "version": "0.1.1",
+  "author": "ClawMod Team",
+  "configSchema": {
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+      "modules": {
+        "type": "object",
+        "properties": {
+          "clawshield": {
+            "type": "boolean",
+            "default": true,
+            "description": "Enable ClawShield security module"
+          },
+          "clawmem": {
+            "type": "boolean",
+            "default": true,
+            "description": "Enable ClawMem memory module"
+          }
+        }
+      },
+      "clawshield": {
+        "type": "object",
+        "properties": {
+          "blockSecrets": {
+            "type": "boolean",
+            "default": true,
+            "description": "Block messages containing API keys/secrets"
+          },
+          "redactPII": {
+            "type": "boolean",
+            "default": true,
+            "description": "Redact personally identifiable information"
+          },
+          "spotlightUntrusted": {
+            "type": "boolean",
+            "default": true,
+            "description": "Mark untrusted input to prevent prompt injection"
+          },
+          "auditLog": {
+            "type": "boolean",
+            "default": true,
+            "description": "Enable tamper-evident audit logging"
+          }
+        }
+      },
+      "clawmem": {
+        "type": "object",
+        "properties": {
+          "maxRecallItems": {
+            "type": "number",
+            "default": 1000,
+            "description": "Maximum recall memory items"
+          },
+          "decayEnabled": {
+            "type": "boolean",
+            "default": true,
+            "description": "Enable memory decay over time"
+          },
+          "halfLifeHours": {
+            "type": "number",
+            "default": 168,
+            "description": "Memory decay half-life in hours (default: 1 week)"
+          },
+          "minImportanceForStorage": {
+            "type": "number",
+            "default": 3,
+            "minimum": 1,
+            "maximum": 10,
+            "description": "Minimum importance score to store (1-10)"
+          },
+          "minImportanceForNoDecay": {
+            "type": "number",
+            "default": 8,
+            "minimum": 1,
+            "maximum": 10,
+            "description": "Importance threshold for permanent memories (1-10)"
+          }
+        }
+      },
+      "dataDir": {
+        "type": "string",
+        "description": "Custom data directory path (optional)"
+      }
+    }
+  },
+  "uiHints": {
+    "modules.clawshield": {
+      "label": "Enable ClawShield (Security)",
+      "description": "Scan for secrets, redact PII, prevent prompt injection"
+    },
+    "modules.clawmem": {
+      "label": "Enable ClawMem (Memory)",
+      "description": "Persistent memory with intelligent decay"
+    },
+    "clawshield.blockSecrets": {
+      "label": "Block Secrets",
+      "description": "Prevent API keys and tokens from being sent"
+    },
+    "clawshield.redactPII": {
+      "label": "Redact PII",
+      "description": "Replace emails, phones, SSNs with [REDACTED]"
+    },
+    "clawshield.spotlightUntrusted": {
+      "label": "Spotlight Untrusted Input",
+      "description": "Mark user input to prevent prompt injection attacks"
+    },
+    "clawshield.auditLog": {
+      "label": "Audit Logging",
+      "description": "Create tamper-evident security event logs"
+    },
+    "clawmem.maxRecallItems": {
+      "label": "Max Recall Items",
+      "description": "How many memories to keep in active recall"
+    },
+    "clawmem.decayEnabled": {
+      "label": "Memory Decay",
+      "description": "Fade old memories over time (Ebbinghaus curve)"
+    },
+    "clawmem.halfLifeHours": {
+      "label": "Decay Half-Life (hours)",
+      "description": "Time for memory strength to halve"
+    },
+    "clawmem.minImportanceForStorage": {
+      "label": "Min Importance to Store",
+      "description": "Only store memories with importance ≥ this value"
+    },
+    "clawmem.minImportanceForNoDecay": {
+      "label": "Permanent Memory Threshold",
+      "description": "Memories ≥ this importance never decay"
+    },
+    "dataDir": {
+      "label": "Data Directory",
+      "description": "Where to store ClawMod data (leave empty for default)",
+      "placeholder": "~/.openclaw/agents/<agentId>/workspace/clawmod"
+    }
+  }
+}

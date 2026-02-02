@@ -13,11 +13,12 @@
     }
   },
   "files": [
-    "dist"
+    "dist",
+    "openclaw.plugin.json"
   ],
   "openclaw": {
     "extensions": [
-      "dist/index.js"
+      "dist/index.mjs"
     ],
     "minVersion": "1.0.0",
     "hooks": {
