@@ -29,18 +29,33 @@ interface EmbeddingResponse {
 export class EmbeddingServiceImpl implements EmbeddingService {
   private cache: Map<string, number[]> = new Map();
   private readonly maxCacheSize: number = 1000;
-  private readonly apiKey: string;
   private readonly apiEndpoint: string = 'https://openrouter.ai/api/v1/embeddings';
 
   constructor(private config: ClawModConfig) {
-    const apiKeyEnvVar = config.apiKeyEnv;
-    this.apiKey = process.env[apiKeyEnvVar] || '';
+    // Don't check API key in constructor - check lazily when first used
+  }
 
-    if (!this.apiKey) {
-      throw new EmbeddingError(`API key not found in environment variable: ${apiKeyEnvVar}`, {
-        envVar: apiKeyEnvVar,
-      });
+  /**
+   * Get API key from environment, throwing error if not found
+   *
+   * @private
+   */
+  private getApiKey(): string {
+    const apiKeyEnvVar = this.config.apiKeyEnv;
+    const apiKey = process.env[apiKeyEnvVar];
+
+    if (!apiKey) {
+      throw new EmbeddingError(
+        `API key not found in environment variable: ${apiKeyEnvVar}. ` +
+        `ClawMem features requiring embeddings will not work. ` +
+        `Set ${apiKeyEnvVar} to enable full functionality.`,
+        {
+          envVar: apiKeyEnvVar,
+        }
+      );
     }
+
+    return apiKey;
   }
 
   /**
@@ -101,11 +116,14 @@ export class EmbeddingServiceImpl implements EmbeddingService {
    * @private
    */
   private async fetchEmbeddings(texts: string[]): Promise<number[][]> {
+    // Get API key lazily (will throw if not available)
+    const apiKey = this.getApiKey();
+
     try {
       const response = await fetch(this.apiEndpoint, {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${this.apiKey}`,
+          'Authorization': `Bearer ${apiKey}`,
           'Content-Type': 'application/json',
           'HTTP-Referer': 'https://github.com/claw-industries/clawmod',
           'X-Title': 'ClawMod',

@@ -114,6 +114,13 @@ export const ClawModConfigSchema = z.object({
     clawresearch: z.boolean().default(false),
     clawagent: z.boolean().default(false),
     clawflow: z.boolean().default(false),
+  }).optional().default({
+    clawshield: true,
+    clawmem: true,
+    clawsave: false,
+    clawresearch: false,
+    clawagent: false,
+    clawflow: false,
   }),
 
   provider: z.enum(['openrouter', 'anthropic', 'openai', 'ollama']).default('openrouter'),
@@ -124,6 +131,11 @@ export const ClawModConfigSchema = z.object({
     embedding: z.string().default('openai/text-embedding-3-small'),
     extraction: z.string().default('openai/gpt-4o-mini'),
     powerful: z.string().default('anthropic/claude-sonnet-4'),
+  }).optional().default({
+    scoring: 'google/gemini-2.0-flash-lite',
+    embedding: 'openai/text-embedding-3-small',
+    extraction: 'openai/gpt-4o-mini',
+    powerful: 'anthropic/claude-sonnet-4',
   }),
 
   fallbacks: z.record(z.string(), z.array(z.string())).optional(),
@@ -132,6 +144,10 @@ export const ClawModConfigSchema = z.object({
     mode: z.enum(['auto', 'notify', 'manual', 'disabled']).default('notify'),
     channel: z.enum(['stable', 'beta', 'dev']).default('stable'),
     checkInterval: z.number().default(86400000),
+  }).optional().default({
+    mode: 'notify' as const,
+    channel: 'stable' as const,
+    checkInterval: 86400000,
   }),
 
   clawshield: ClawShieldConfigSchema.optional(),

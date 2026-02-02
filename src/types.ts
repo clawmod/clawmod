@@ -3,7 +3,149 @@
  */
 
 // ═══════════════════════════════════════════════════════════════════
-// HOOK TYPES
+// OPENCLAW PLUGIN SDK TYPES (unofficial - based on documentation)
+// ═══════════════════════════════════════════════════════════════════
+
+/**
+ * OpenClaw Plugin API Logger
+ *
+ * Logger interface for OpenClaw plugins (2026 API)
+ */
+export interface OpenClawLogger {
+  debug(message: string, ...args: any[]): void;
+  info(message: string, ...args: any[]): void;
+  warn(message: string, ...args: any[]): void;
+  error(message: string, ...args: any[]): void;
+}
+
+/**
+ * OpenClaw Plugin API
+ *
+ * The API object passed to plugin registration functions.
+ * Provides methods to interact with the OpenClaw core system.
+ *
+ * @see https://docs.openclaw.ai/plugin
+ */
+export interface OpenClawPluginAPI {
+  /** Plugin configuration object (validated against configSchema) */
+  config: Record<string, unknown>;
+
+  /**
+   * Logger instance for plugin messages
+   * @example api.logger.info("Plugin initialized")
+   */
+  logger: OpenClawLogger;
+
+  /**
+   * Register a tool that agents can invoke during LLM interactions
+   *
+   * @param definition - Tool definition with name, description, parameters, and execute function
+   * @param options - Optional configuration (e.g., { optional: true } for allowlist-only tools)
+   */
+  registerTool(definition: ToolDefinition, options?: ToolOptions): void;
+}
+
+/**
+ * Tool definition for OpenClaw agent tools
+ */
+export interface ToolDefinition {
+  /** Tool identifier (snake_case recommended) */
+  name: string;
+
+  /** What the tool does (shown to LLM to decide when to use it) */
+  description: string;
+
+  /** JSON Schema for tool parameters */
+  parameters: {
+    type: 'object';
+    properties: Record<string, any>;
+    required?: string[];
+  };
+
+  /**
+   * Handler function that executes the tool
+   *
+   * @param id - Unique execution ID (often unused, prefix with _)
+   * @param params - Parameters matching the parameters schema
+   * @returns Tool result with content array
+   */
+  execute: (id: string, params: any) => Promise<ToolResult>;
+}
+
+/**
+ * Tool registration options
+ */
+export interface ToolOptions {
+  /**
+   * If true, tool must be explicitly allowed in agent config
+   * Default: false (tool is always available)
+   */
+  optional?: boolean;
+}
+
+/**
+ * Tool execution result
+ */
+export interface ToolResult {
+  content: Array<{
+    type: 'text' | 'image' | 'file';
+    text?: string;        // For type: "text"
+    data?: string;        // For type: "image" (base64)
+    mimeType?: string;    // For type: "image" or "file"
+    url?: string;         // For type: "file"
+  }>;
+}
+
+/**
+ * Hook event received by hook handlers
+ */
+export interface OpenClawHookEvent {
+  /** Event type (e.g., "message:received", "command:new") */
+  type: string;
+
+  /** Optional action identifier */
+  action?: string;
+
+  /** Event-specific data */
+  data?: any;
+}
+
+/**
+ * Hook handler result
+ */
+export interface OpenClawHookResult {
+  /** If true, blocks the operation */
+  blocked?: boolean;
+
+  /** Reason for blocking (required if blocked is true) */
+  reason?: string;
+
+  /** Modified data to pass to next hook */
+  modified?: any;
+
+  /** Whether the hook succeeded */
+  success?: boolean;
+
+  /** Optional message */
+  message?: string;
+}
+
+/**
+ * Hook handler function signature
+ *
+ * @param event - The event that triggered this hook
+ * @param context - OpenClaw context (agent state, user info, etc.)
+ * @param api - Plugin API object
+ * @returns Hook result with optional blocking, modifications, etc.
+ */
+export type OpenClawHookHandler = (
+  event: OpenClawHookEvent,
+  context: any,
+  api: OpenClawPluginAPI
+) => Promise<OpenClawHookResult>;
+
+// ═══════════════════════════════════════════════════════════════════
+// HOOK TYPES (INTERNAL)
 // ═══════════════════════════════════════════════════════════════════
 
 export type HookEvent =
@@ -50,8 +192,8 @@ export interface HookRegistration {
 
 export interface CoreServices {
   config: ConfigManager;
-  llm: TieredLLM;
-  embedding: EmbeddingService;
+  llm?: TieredLLM;           // Optional - may not be available if API key missing
+  embedding?: EmbeddingService;  // Optional - may not be available if API key missing
   storage: StorageAdapter;
   hooks: HookManager;
   health: HealthChecker;

@@ -32,6 +32,7 @@ export class SQLiteStorageAdapter implements StorageAdapter {
    */
   private initializeTables(): void {
     try {
+      // Key-value store table
       this.db.exec(`
         CREATE TABLE IF NOT EXISTS kv_store (
           namespace TEXT NOT NULL,
@@ -42,6 +43,70 @@ export class SQLiteStorageAdapter implements StorageAdapter {
           PRIMARY KEY (namespace, key)
         )
       `);
+
+      // Memory storage table (ClawMem)
+      this.db.exec(`
+        CREATE TABLE IF NOT EXISTS memories (
+          id TEXT PRIMARY KEY,
+          type TEXT NOT NULL,
+          content TEXT NOT NULL,
+          importance INTEGER NOT NULL,
+          tier TEXT NOT NULL,
+          created_at INTEGER NOT NULL,
+          last_accessed_at INTEGER NOT NULL,
+          access_count INTEGER NOT NULL DEFAULT 0,
+          decay_score REAL NOT NULL DEFAULT 1.0,
+          sources TEXT,
+          metadata TEXT,
+          CHECK (importance >= 1 AND importance <= 10),
+          CHECK (tier IN ('core', 'recall', 'archival')),
+          CHECK (type IN ('episodic', 'semantic', 'procedural', 'session_summary'))
+        )
+      `);
+
+      // Create indices for common queries
+      this.db.exec(`
+        CREATE INDEX IF NOT EXISTS idx_memories_tier ON memories(tier);
+        CREATE INDEX IF NOT EXISTS idx_memories_type ON memories(type);
+        CREATE INDEX IF NOT EXISTS idx_memories_importance ON memories(importance);
+        CREATE INDEX IF NOT EXISTS idx_memories_last_accessed ON memories(last_accessed_at);
+      `);
+
+      // Memory embeddings table (for vector search)
+      this.db.exec(`
+        CREATE TABLE IF NOT EXISTS memory_embeddings (
+          memory_id TEXT PRIMARY KEY,
+          embedding BLOB NOT NULL,
+          dimension INTEGER NOT NULL,
+          created_at INTEGER NOT NULL,
+          FOREIGN KEY (memory_id) REFERENCES memories(id) ON DELETE CASCADE
+        )
+      `);
+
+      // Memory relations table (for knowledge graph)
+      this.db.exec(`
+        CREATE TABLE IF NOT EXISTS memory_relations (
+          id TEXT PRIMARY KEY,
+          source_id TEXT NOT NULL,
+          target_id TEXT NOT NULL,
+          relation_type TEXT NOT NULL,
+          strength REAL NOT NULL DEFAULT 1.0,
+          created_at INTEGER NOT NULL,
+          metadata TEXT,
+          FOREIGN KEY (source_id) REFERENCES memories(id) ON DELETE CASCADE,
+          FOREIGN KEY (target_id) REFERENCES memories(id) ON DELETE CASCADE,
+          CHECK (strength >= 0.0 AND strength <= 1.0)
+        )
+      `);
+
+      // Create indices for relation queries
+      this.db.exec(`
+        CREATE INDEX IF NOT EXISTS idx_relations_source ON memory_relations(source_id);
+        CREATE INDEX IF NOT EXISTS idx_relations_target ON memory_relations(target_id);
+        CREATE INDEX IF NOT EXISTS idx_relations_type ON memory_relations(relation_type);
+      `);
+
+      console.log('[Storage] Database tables initialized successfully');
     } catch (error) {
       throw new StorageError('Failed to create database tables', {
         error: error instanceof Error ? error.message : String(error),
@@ -220,6 +285,44 @@ export class SQLiteStorageAdapter implements StorageAdapter {
       this.db.close();
     } catch (error) {
       throw new StorageError('Failed to close database', {
+        namespace: this.namespace,
+        error: error instanceof Error ? error.message : String(error),
+      });
+    }
+  }
+
+  /**
+   * Get raw database connection for advanced operations
+   * @internal Used by modules that need direct database access
+   */
+  getDatabase(): Database.Database {
+    return this.db;
+  }
+
+  /**
+   * Execute a raw SQL query
+   * @internal Use with caution - for advanced operations only
+   */
+  exec(sql: string): void {
+    try {
+      this.db.exec(sql);
+    } catch (error) {
+      throw new StorageError('Failed to execute SQL', {
+        namespace: this.namespace,
+        error: error instanceof Error ? error.message : String(error),
+      });
+    }
+  }
+
+  /**
+   * Prepare a SQL statement
+   * @internal Use with caution - for advanced operations only
+   */
+  prepare<T = unknown>(sql: string): Database.Statement<T[]> {
+    try {
+      return this.db.prepare<T[]>(sql);
+    } catch (error) {
+      throw new StorageError('Failed to prepare statement', {
         namespace: this.namespace,
         error: error instanceof Error ? error.message : String(error),
       });

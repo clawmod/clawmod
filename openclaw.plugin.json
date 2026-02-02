@@ -20,123 +20,595 @@
             "type": "boolean",
             "default": true,
             "description": "Enable ClawMem memory module"
+          },
+          "clawsave": {
+            "type": "boolean",
+            "default": false,
+            "description": "Enable ClawSave session persistence"
+          },
+          "clawresearch": {
+            "type": "boolean",
+            "default": false,
+            "description": "Enable ClawResearch deep research capabilities"
+          },
+          "clawagent": {
+            "type": "boolean",
+            "default": false,
+            "description": "Enable ClawAgent autonomous agent system"
+          },
+          "clawflow": {
+            "type": "boolean",
+            "default": false,
+            "description": "Enable ClawFlow workflow orchestration"
+          }
+        }
+      },
+      "provider": {
+        "type": "string",
+        "enum": ["openrouter", "anthropic", "openai", "ollama"],
+        "default": "openrouter",
+        "description": "LLM provider to use for ClawMod operations"
+      },
+      "apiKeyEnv": {
+        "type": "string",
+        "default": "OPENROUTER_API_KEY",
+        "description": "Environment variable name containing the API key"
+      },
+      "models": {
+        "type": "object",
+        "properties": {
+          "scoring": {
+            "type": "string",
+            "default": "google/gemini-2.0-flash-lite",
+            "description": "Model for importance scoring and memory evaluation"
+          },
+          "embedding": {
+            "type": "string",
+            "default": "openai/text-embedding-3-small",
+            "description": "Model for generating embeddings for semantic search"
+          },
+          "extraction": {
+            "type": "string",
+            "default": "openai/gpt-4o-mini",
+            "description": "Model for extracting entities and relationships"
+          },
+          "powerful": {
+            "type": "string",
+            "default": "anthropic/claude-sonnet-4",
+            "description": "Powerful model for complex reasoning tasks"
+          }
+        }
+      },
+      "fallbacks": {
+        "type": "object",
+        "additionalProperties": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "description": "Fallback model mappings if primary models fail"
+      },
+      "updates": {
+        "type": "object",
+        "properties": {
+          "mode": {
+            "type": "string",
+            "enum": ["auto", "notify", "manual", "disabled"],
+            "default": "notify",
+            "description": "How to handle ClawMod updates"
+          },
+          "channel": {
+            "type": "string",
+            "enum": ["stable", "beta", "dev"],
+            "default": "stable",
+            "description": "Update channel to follow"
+          },
+          "checkInterval": {
+            "type": "number",
+            "default": 86400000,
+            "description": "Update check interval in milliseconds (default: 24 hours)"
           }
         }
       },
       "clawshield": {
         "type": "object",
         "properties": {
-          "blockSecrets": {
-            "type": "boolean",
-            "default": true,
-            "description": "Block messages containing API keys/secrets"
+          "spotlighting": {
+            "type": "object",
+            "properties": {
+              "enabled": {
+                "type": "boolean",
+                "default": true,
+                "description": "Enable spotlighting to mark untrusted input"
+              },
+              "tokenInterval": {
+                "type": "number",
+                "default": 5,
+                "description": "Insert spotlight markers every N tokens"
+              }
+            }
           },
-          "redactPII": {
-            "type": "boolean",
-            "default": true,
-            "description": "Redact personally identifiable information"
+          "secretScanning": {
+            "type": "object",
+            "properties": {
+              "enabled": {
+                "type": "boolean",
+                "default": true,
+                "description": "Scan for API keys and secrets"
+              },
+              "patterns": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "default": ["aws", "github", "openai", "generic"],
+                "description": "Secret pattern types to detect"
+              },
+              "entropyThreshold": {
+                "type": "number",
+                "default": 4.5,
+                "description": "Entropy threshold for detecting high-entropy strings"
+              }
+            }
           },
-          "spotlightUntrusted": {
-            "type": "boolean",
-            "default": true,
-            "description": "Mark untrusted input to prevent prompt injection"
+          "piiDetection": {
+            "type": "object",
+            "properties": {
+              "enabled": {
+                "type": "boolean",
+                "default": true,
+                "description": "Detect and redact personally identifiable information"
+              },
+              "types": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "default": ["email", "phone", "ssn", "creditcard"],
+                "description": "PII types to detect"
+              },
+              "redactionStyle": {
+                "type": "string",
+                "default": "[REDACTED]",
+                "description": "Text to replace detected PII with"
+              }
+            }
           },
-          "auditLog": {
-            "type": "boolean",
-            "default": true,
-            "description": "Enable tamper-evident audit logging"
+          "audit": {
+            "type": "object",
+            "properties": {
+              "enabled": {
+                "type": "boolean",
+                "default": true,
+                "description": "Enable tamper-evident audit logging"
+              },
+              "retention": {
+                "type": "number",
+                "default": 90,
+                "description": "Number of days to retain audit logs"
+              }
+            }
           }
         }
       },
       "clawmem": {
         "type": "object",
         "properties": {
-          "maxRecallItems": {
-            "type": "number",
-            "default": 1000,
-            "description": "Maximum recall memory items"
+          "tiers": {
+            "type": "object",
+            "properties": {
+              "core": {
+                "type": "object",
+                "properties": {
+                  "maxTokens": {
+                    "type": "number",
+                    "default": 2000,
+                    "description": "Maximum tokens for core memories (always loaded)"
+                  },
+                  "files": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "default": ["persona.md", "user_profile.md", "current_goals.md"],
+                    "description": "Core memory file names"
+                  }
+                }
+              },
+              "recall": {
+                "type": "object",
+                "properties": {
+                  "maxItems": {
+                    "type": "number",
+                    "default": 1000,
+                    "description": "Maximum items in recall tier"
+                  },
+                  "embeddingThreshold": {
+                    "type": "number",
+                    "default": 0.7,
+                    "description": "Minimum similarity threshold for recall"
+                  }
+                }
+              },
+              "archival": {
+                "type": "object",
+                "properties": {
+                  "retentionDays": {
+                    "type": "number",
+                    "default": 365,
+                    "description": "Days to retain archival memories"
+                  },
+                  "compression": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Enable compression for archival storage"
+                  }
+                }
+              }
+            }
           },
-          "decayEnabled": {
-            "type": "boolean",
-            "default": true,
-            "description": "Enable memory decay over time"
+          "scoring": {
+            "type": "object",
+            "properties": {
+              "minImportance": {
+                "type": "number",
+                "default": 3,
+                "description": "Minimum importance score to store memories (1-10)"
+              },
+              "batchSize": {
+                "type": "number",
+                "default": 10,
+                "description": "Batch size for importance scoring operations"
+              }
+            }
           },
-          "halfLifeHours": {
-            "type": "number",
-            "default": 168,
-            "description": "Memory decay half-life in hours (default: 1 week)"
+          "decay": {
+            "type": "object",
+            "properties": {
+              "enabled": {
+                "type": "boolean",
+                "default": true,
+                "description": "Enable memory decay over time (Ebbinghaus curve)"
+              },
+              "halfLifeHours": {
+                "type": "number",
+                "default": 168,
+                "description": "Memory decay half-life in hours (default: 1 week)"
+              },
+              "minImportanceForNoDecay": {
+                "type": "number",
+                "default": 8,
+                "description": "Memories with importance >= this never decay"
+              },
+              "pruneThreshold": {
+                "type": "number",
+                "default": 0.05,
+                "description": "Strength threshold below which memories are pruned"
+              },
+              "pruneSchedule": {
+                "type": "string",
+                "default": "0 5 * * 0",
+                "description": "Cron schedule for memory pruning (default: Sunday 5am)"
+              }
+            }
           },
-          "minImportanceForStorage": {
-            "type": "number",
-            "default": 3,
-            "minimum": 1,
-            "maximum": 10,
-            "description": "Minimum importance score to store (1-10)"
+          "consolidation": {
+            "type": "object",
+            "properties": {
+              "enabled": {
+                "type": "boolean",
+                "default": true,
+                "description": "Enable memory consolidation (combining related memories)"
+              },
+              "schedule": {
+                "type": "string",
+                "default": "0 4 * * *",
+                "description": "Cron schedule for consolidation (default: daily 4am)"
+              },
+              "minEpisodes": {
+                "type": "number",
+                "default": 5,
+                "description": "Minimum episodes needed to trigger consolidation"
+              },
+              "maxEpisodes": {
+                "type": "number",
+                "default": 100,
+                "description": "Maximum episodes to consolidate at once"
+              }
+            }
           },
-          "minImportanceForNoDecay": {
-            "type": "number",
-            "default": 8,
-            "minimum": 1,
-            "maximum": 10,
-            "description": "Importance threshold for permanent memories (1-10)"
+          "contradiction": {
+            "type": "object",
+            "properties": {
+              "enabled": {
+                "type": "boolean",
+                "default": true,
+                "description": "Enable contradiction detection in memories"
+              },
+              "similarityThreshold": {
+                "type": "number",
+                "default": 0.8,
+                "description": "Similarity threshold for detecting contradictions"
+              },
+              "autoResolve": {
+                "type": "boolean",
+                "default": false,
+                "description": "Automatically resolve contradictions (keeps newer memory)"
+              }
+            }
+          },
+          "graph": {
+            "type": "object",
+            "properties": {
+              "enabled": {
+                "type": "boolean",
+                "default": true,
+                "description": "Enable knowledge graph for memory relationships"
+              },
+              "extractRelations": {
+                "type": "boolean",
+                "default": true,
+                "description": "Extract entity relationships from memories"
+              },
+              "maxDepth": {
+                "type": "number",
+                "default": 3,
+                "description": "Maximum graph traversal depth"
+              }
+            }
+          },
+          "retrieval": {
+            "type": "object",
+            "properties": {
+              "weights": {
+                "type": "object",
+                "properties": {
+                  "recency": {
+                    "type": "number",
+                    "default": 1.0,
+                    "description": "Weight for recency in memory retrieval"
+                  },
+                  "importance": {
+                    "type": "number",
+                    "default": 1.0,
+                    "description": "Weight for importance in memory retrieval"
+                  },
+                  "relevance": {
+                    "type": "number",
+                    "default": 1.5,
+                    "description": "Weight for relevance in memory retrieval"
+                  },
+                  "frequency": {
+                    "type": "number",
+                    "default": 0.5,
+                    "description": "Weight for access frequency in retrieval"
+                  }
+                }
+              },
+              "maxResults": {
+                "type": "number",
+                "default": 10,
+                "description": "Maximum results to return from memory search"
+              }
+            }
           }
         }
-      },
-      "dataDir": {
-        "type": "string",
-        "description": "Custom data directory path (optional)"
       }
     }
   },
   "uiHints": {
     "modules.clawshield": {
-      "label": "Enable ClawShield (Security)",
+      "label": "ClawShield (Security)",
       "description": "Scan for secrets, redact PII, prevent prompt injection"
     },
     "modules.clawmem": {
-      "label": "Enable ClawMem (Memory)",
+      "label": "ClawMem (Memory)",
       "description": "Persistent memory with intelligent decay"
     },
-    "clawshield.blockSecrets": {
-      "label": "Block Secrets",
-      "description": "Prevent API keys and tokens from being sent"
+    "modules.clawsave": {
+      "label": "ClawSave (Persistence)",
+      "description": "Session persistence and recovery"
     },
-    "clawshield.redactPII": {
-      "label": "Redact PII",
-      "description": "Replace emails, phones, SSNs with [REDACTED]"
+    "modules.clawresearch": {
+      "label": "ClawResearch (Research)",
+      "description": "Deep research and information gathering"
     },
-    "clawshield.spotlightUntrusted": {
-      "label": "Spotlight Untrusted Input",
-      "description": "Mark user input to prevent prompt injection attacks"
+    "modules.clawagent": {
+      "label": "ClawAgent (Autonomous)",
+      "description": "Autonomous agent capabilities"
     },
-    "clawshield.auditLog": {
-      "label": "Audit Logging",
-      "description": "Create tamper-evident security event logs"
+    "modules.clawflow": {
+      "label": "ClawFlow (Workflows)",
+      "description": "Workflow orchestration and automation"
     },
-    "clawmem.maxRecallItems": {
-      "label": "Max Recall Items",
-      "description": "How many memories to keep in active recall"
+    "provider": {
+      "label": "LLM Provider",
+      "description": "Which LLM provider to use for ClawMod operations"
     },
-    "clawmem.decayEnabled": {
+    "apiKeyEnv": {
+      "label": "API Key Environment Variable",
+      "description": "Name of environment variable containing the API key"
+    },
+    "models.scoring": {
+      "label": "Scoring Model",
+      "description": "Model for importance scoring and evaluation"
+    },
+    "models.embedding": {
+      "label": "Embedding Model",
+      "description": "Model for generating semantic embeddings"
+    },
+    "models.extraction": {
+      "label": "Extraction Model",
+      "description": "Model for extracting entities and relationships"
+    },
+    "models.powerful": {
+      "label": "Powerful Model",
+      "description": "High-capability model for complex reasoning"
+    },
+    "updates.mode": {
+      "label": "Update Mode",
+      "description": "How to handle ClawMod updates"
+    },
+    "updates.channel": {
+      "label": "Update Channel",
+      "description": "Which update channel to follow"
+    },
+    "updates.checkInterval": {
+      "label": "Update Check Interval",
+      "description": "How often to check for updates (milliseconds)"
+    },
+    "clawshield.spotlighting.enabled": {
+      "label": "Enable Spotlighting",
+      "description": "Mark untrusted input to prevent prompt injection"
+    },
+    "clawshield.spotlighting.tokenInterval": {
+      "label": "Spotlight Token Interval",
+      "description": "Insert markers every N tokens"
+    },
+    "clawshield.secretScanning.enabled": {
+      "label": "Enable Secret Scanning",
+      "description": "Scan for API keys and secrets"
+    },
+    "clawshield.secretScanning.patterns": {
+      "label": "Secret Patterns",
+      "description": "Types of secrets to detect"
+    },
+    "clawshield.secretScanning.entropyThreshold": {
+      "label": "Entropy Threshold",
+      "description": "Threshold for high-entropy string detection"
+    },
+    "clawshield.piiDetection.enabled": {
+      "label": "Enable PII Detection",
+      "description": "Detect and redact personally identifiable information"
+    },
+    "clawshield.piiDetection.types": {
+      "label": "PII Types",
+      "description": "Types of PII to detect"
+    },
+    "clawshield.piiDetection.redactionStyle": {
+      "label": "Redaction Text",
+      "description": "Text to replace PII with"
+    },
+    "clawshield.audit.enabled": {
+      "label": "Enable Audit Logging",
+      "description": "Create tamper-evident security logs"
+    },
+    "clawshield.audit.retention": {
+      "label": "Audit Log Retention",
+      "description": "Days to retain audit logs"
+    },
+    "clawmem.tiers.core.maxTokens": {
+      "label": "Core Memory Max Tokens",
+      "description": "Maximum tokens for always-loaded core memories"
+    },
+    "clawmem.tiers.core.files": {
+      "label": "Core Memory Files",
+      "description": "File names for core memories"
+    },
+    "clawmem.tiers.recall.maxItems": {
+      "label": "Recall Memory Max Items",
+      "description": "Maximum items in recall tier"
+    },
+    "clawmem.tiers.recall.embeddingThreshold": {
+      "label": "Recall Similarity Threshold",
+      "description": "Minimum similarity for recall"
+    },
+    "clawmem.tiers.archival.retentionDays": {
+      "label": "Archival Retention",
+      "description": "Days to retain archival memories"
+    },
+    "clawmem.tiers.archival.compression": {
+      "label": "Archival Compression",
+      "description": "Compress archival memories"
+    },
+    "clawmem.scoring.minImportance": {
+      "label": "Min Importance Score",
+      "description": "Minimum score to store memories"
+    },
+    "clawmem.scoring.batchSize": {
+      "label": "Scoring Batch Size",
+      "description": "Items to score in each batch"
+    },
+    "clawmem.decay.enabled": {
       "label": "Memory Decay",
       "description": "Fade old memories over time (Ebbinghaus curve)"
     },
-    "clawmem.halfLifeHours": {
-      "label": "Decay Half-Life (hours)",
-      "description": "Time for memory strength to halve"
+    "clawmem.decay.halfLifeHours": {
+      "label": "Decay Half-Life",
+      "description": "Hours for memory strength to halve"
     },
-    "clawmem.minImportanceForStorage": {
-      "label": "Min Importance to Store",
-      "description": "Only store memories with importance ≥ this value"
-    },
-    "clawmem.minImportanceForNoDecay": {
+    "clawmem.decay.minImportanceForNoDecay": {
       "label": "Permanent Memory Threshold",
-      "description": "Memories ≥ this importance never decay"
+      "description": "Importance threshold for permanent memories"
     },
-    "dataDir": {
-      "label": "Data Directory",
-      "description": "Where to store ClawMod data (leave empty for default)",
-      "placeholder": "~/.openclaw/agents/<agentId>/workspace/clawmod"
+    "clawmem.decay.pruneThreshold": {
+      "label": "Prune Threshold",
+      "description": "Strength below which memories are deleted"
+    },
+    "clawmem.decay.pruneSchedule": {
+      "label": "Prune Schedule",
+      "description": "Cron schedule for pruning old memories"
+    },
+    "clawmem.consolidation.enabled": {
+      "label": "Memory Consolidation",
+      "description": "Combine related memories together"
+    },
+    "clawmem.consolidation.schedule": {
+      "label": "Consolidation Schedule",
+      "description": "Cron schedule for consolidation"
+    },
+    "clawmem.consolidation.minEpisodes": {
+      "label": "Min Episodes for Consolidation",
+      "description": "Minimum episodes to trigger consolidation"
+    },
+    "clawmem.consolidation.maxEpisodes": {
+      "label": "Max Episodes per Consolidation",
+      "description": "Maximum episodes to consolidate at once"
+    },
+    "clawmem.contradiction.enabled": {
+      "label": "Contradiction Detection",
+      "description": "Detect conflicting memories"
+    },
+    "clawmem.contradiction.similarityThreshold": {
+      "label": "Contradiction Similarity",
+      "description": "Similarity threshold for contradictions"
+    },
+    "clawmem.contradiction.autoResolve": {
+      "label": "Auto-Resolve Contradictions",
+      "description": "Automatically keep newer memory"
+    },
+    "clawmem.graph.enabled": {
+      "label": "Knowledge Graph",
+      "description": "Enable memory relationship graph"
+    },
+    "clawmem.graph.extractRelations": {
+      "label": "Extract Relations",
+      "description": "Extract entity relationships"
+    },
+    "clawmem.graph.maxDepth": {
+      "label": "Graph Max Depth",
+      "description": "Maximum traversal depth"
+    },
+    "clawmem.retrieval.weights.recency": {
+      "label": "Recency Weight",
+      "description": "Weight for recent memories"
+    },
+    "clawmem.retrieval.weights.importance": {
+      "label": "Importance Weight",
+      "description": "Weight for important memories"
+    },
+    "clawmem.retrieval.weights.relevance": {
+      "label": "Relevance Weight",
+      "description": "Weight for relevant memories"
+    },
+    "clawmem.retrieval.weights.frequency": {
+      "label": "Frequency Weight",
+      "description": "Weight for frequently accessed memories"
+    },
+    "clawmem.retrieval.maxResults": {
+      "label": "Max Search Results",
+      "description": "Maximum memories to return from search"
     }
   }
 }

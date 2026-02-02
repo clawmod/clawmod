@@ -79,6 +79,18 @@ export class ClawMemModule implements ClawModModule {
   private enabled = true;
 
   async initialize(core: CoreServices): Promise<void> {
+    // Check if required services are available (required for ClawMem)
+    if (!core.embedding) {
+      throw new Error(
+        'ClawMem requires embedding service. Please set API key environment variable to enable ClawMem.'
+      );
+    }
+    if (!core.llm) {
+      throw new Error(
+        'ClawMem requires LLM service. Please set API key environment variable to enable ClawMem.'
+      );
+    }
+
     const config = core.config.getModuleConfig<ClawMemConfig>('clawmem') ?? {};
 
     const baseDir = path.join(
@@ -90,7 +102,7 @@ export class ClawMemModule implements ClawModModule {
       'clawmod'
     );
 
-    // Initialize components
+    // Initialize components with database-backed storage
     this.manager = new MemoryManager({
       coreDir: path.join(baseDir, 'core'),
       recallDir: path.join(baseDir, 'recall'),
@@ -112,6 +124,8 @@ export class ClawMemModule implements ClawModModule {
         retentionDays: config.tiers?.archival?.retentionDays ?? 365,
         compression: config.tiers?.archival?.compression ?? true,
       },
+      storage: core.storage, // Pass storage adapter for database access
+      useDatabase: true, // Enable database-backed storage
     });
 
     this.retrieval = new MemoryRetrieval({
@@ -264,4 +278,5 @@ export { createClawMemHooks } from './hooks';
 // Re-export storage components
 export { CoreMemoryStorage } from './storage/core';
 export { RecallMemoryStorage } from './storage/recall';
+export { RecallMemoryStorageDB } from './storage/recall-db';
 export { ArchivalMemoryStorage } from './storage/archival';

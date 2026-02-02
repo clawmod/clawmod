@@ -10,8 +10,9 @@
 import * as crypto from 'crypto';
 import { CoreMemoryStorage } from './storage/core';
 import { RecallMemoryStorage } from './storage/recall';
+import { RecallMemoryStorageDB } from './storage/recall-db';
 import { ArchivalMemoryStorage } from './storage/archival';
-import type { Memory, MemoryType } from '../../types';
+import type { Memory, MemoryType, StorageAdapter } from '../../types';
 import type { SessionTranscript } from './storage/archival';
 
 // ═══════════════════════════════════════════════════════════════════
@@ -25,6 +26,8 @@ export interface MemoryManagerConfig {
   core: { maxTokens: number; files: string[] };
   recall: { maxItems: number; embeddingThreshold: number };
   archival: { retentionDays: number; compression: boolean };
+  storage?: StorageAdapter; // Optional: if provided, uses database instead of files
+  useDatabase?: boolean; // Whether to use database-backed storage
 }
 
 export interface MemoryStats {
@@ -47,19 +50,32 @@ export interface MemoryStats {
  */
 export class MemoryManager {
   private coreStorage: CoreMemoryStorage;
-  private recallStorage: RecallMemoryStorage;
+  private recallStorage: RecallMemoryStorage | RecallMemoryStorageDB;
   private archivalStorage: ArchivalMemoryStorage;
+  private useDatabase: boolean;
 
   constructor(config: MemoryManagerConfig) {
+    this.useDatabase = config.useDatabase ?? (config.storage !== undefined);
+
     this.coreStorage = new CoreMemoryStorage({
       ...config.core,
       coreDir: config.coreDir,
     });
 
-    this.recallStorage = new RecallMemoryStorage({
-      ...config.recall,
-      recallDir: config.recallDir,
-    });
+    // Use database-backed storage if storage adapter provided
+    if (this.useDatabase && config.storage) {
+      console.log('[ClawMem] Using database-backed recall storage');
+      this.recallStorage = new RecallMemoryStorageDB({
+        ...config.recall,
+        storage: config.storage,
+      });
+    } else {
+      console.log('[ClawMem] Using file-based recall storage');
+      this.recallStorage = new RecallMemoryStorage({
+        ...config.recall,
+        recallDir: config.recallDir,
+      });
+    }
 
     this.archivalStorage = new ArchivalMemoryStorage({
       ...config.archival,

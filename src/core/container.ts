@@ -68,6 +68,7 @@ export class Container {
     );
 
     // 3. Initialize embedding (depends on config)
+    // Create service but don't validate API key yet (lazy initialization)
     this.services.embedding = new EmbeddingServiceImpl(validatedConfig);
 
     // 4. Initialize LLM (depends on config)
@@ -80,8 +81,8 @@ export class Container {
     this.services.health = new HealthCheckerImpl({
       config: this.services.config,
       storage: this.services.storage,
-      llm: this.services.llm,
-      embedding: this.services.embedding,
+      llm: this.services.llm!,        // Assert non-null for now
+      embedding: this.services.embedding!,  // Assert non-null for now
     });
 
     this.initialized = true;
